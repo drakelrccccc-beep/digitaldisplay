@@ -1,0 +1,19 @@
+[Unit]
+Description=Digital Display Service - Google Slides Kiosk for Raspberry Pi
+After=graphical.target network-online.target
+Wants=graphical.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /home/pi/digitaldisplay/dist/index.js
+WorkingDirectory=/home/pi/digitaldisplay
+EnvironmentFile=/home/pi/digitaldisplay/.env
+Restart=always
+RestartSec=10
+User=pi
+Environment=NODE_ENV=production
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+
+[Install]
+WantedBy=graphical.target
