@@ -21,6 +21,7 @@ export class ChromiumDisplay implements Display {
       this.browser = await puppeteer.launch({
         headless: false, // Show GUI
         executablePath: '/usr/bin/chromium-browser', // Raspberry Pi OS default Chromium
+	defaultViewport: null,
         args: [
           '--kiosk', // Full-screen kiosk mode
           '--start-fullscreen',
