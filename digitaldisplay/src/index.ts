@@ -15,16 +15,17 @@ async function main() {
     console.log('Configuration loaded successfully');
 
     // Validate Google Slides URL
-    if (!SlidesService.isValidGoogleSlidesUrl(config.slidesUrl)) {
+   /* if (!SlidesService.isValidGoogleSlidesUrl(config.slidesUrl)) {
       throw new Error(
         `Invalid Google Slides URL: ${config.slidesUrl}\n` +
         'Please provide a valid Google Slides URL in your .env file.\n' +
         'Example: https://docs.google.com/presentation/d/your-presentation-id/edit'
       );
-    }
+    } */
 
     // Convert to presentation mode URL
-    const presentationUrl = SlidesService.toPresentationUrl(config.slidesUrl);
+    //const presentationUrl = SlidesService.toPresentationUrl(config.slidesUrl); we don't need this. we are using a direct link
+    const presentationUrl = config.slidesUrl;
     console.log('Converted to presentation URL:', presentationUrl);
 
     // Launch Chromium display
