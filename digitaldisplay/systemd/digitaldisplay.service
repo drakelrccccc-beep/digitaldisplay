@@ -5,15 +5,15 @@ Wants=graphical.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /home/pi/digitaldisplay/dist/index.js
-WorkingDirectory=/home/pi/digitaldisplay
-EnvironmentFile=/home/pi/digitaldisplay/.env
+ExecStart=/usr/bin/node /home/makerspacerp1/digitaldisplay/digitaldisplay/dist/index.js
+WorkingDirectory=/home/makerspacerp1/digitaldisplay/digitaldisplay
+EnvironmentFile=/home/makerspacerp1/digitaldisplay/digitaldisplay/.env
 Restart=always
 RestartSec=10
-User=pi
+User=makerspacerp1
 Environment=NODE_ENV=production
 Environment=DISPLAY=:0
-Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=XAUTHORITY=/home/makerspacerp1/.Xauthority
 
 [Install]
 WantedBy=graphical.target
