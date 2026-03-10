@@ -23,9 +23,8 @@ async function main() {
       );
     } */
 
-    // Convert to presentation mode URL
-    //const presentationUrl = SlidesService.toPresentationUrl(config.slidesUrl); we don't need this. we are using a direct link
-    const presentationUrl = config.slidesUrl;
+    // Convert to presentation mode URL (embed format with auto-advance and loop)
+    const presentationUrl = SlidesService.toPresentationUrl(config.slidesUrl);
     console.log('Converted to presentation URL:', presentationUrl);
 
     // Launch Chromium display
