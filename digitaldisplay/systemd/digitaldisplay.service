@@ -5,11 +5,14 @@ Wants=graphical.target network-online.target
 
 [Service]
 Type=simple
+ExecStartPre=/bin/sleep 50
+ExecStartPre=/bin/rm -rf /home/makerspacerp1/.cache/chromium
+ExecStartPre=/usr/bin/unclutter -idle 0 -root
 ExecStart=/usr/bin/node /home/makerspacerp1/digitaldisplay/digitaldisplay/dist/index.js
 WorkingDirectory=/home/makerspacerp1/digitaldisplay/digitaldisplay
 EnvironmentFile=/home/makerspacerp1/digitaldisplay/digitaldisplay/.env
 Restart=always
-RestartSec=10
+RestartSec=15
 User=makerspacerp1
 Environment=NODE_ENV=production
 Environment=DISPLAY=:0
