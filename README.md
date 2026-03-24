@@ -42,9 +42,14 @@ nano .env
 
 ### 3. Configure Environment
 
-Edit `.env` file:
+Edit `.env` file (copy from `.env.example`):
 ```bash
-SLIDES_URL=https://docs.google.com/presentation/d/YOUR_PRESENTATION_ID/edit
+# Recommended: use the published embed URL from Google Slides
+# (File → Share → Publish to web → Embed tab)
+SLIDES_URL=https://docs.google.com/presentation/d/e/YOUR_PUBLISHED_ID/embed?start=true&loop=true&delayms=10000
+
+# Regular edit/present URLs also work (auto-converted to embed format):
+# SLIDES_URL=https://docs.google.com/presentation/d/YOUR_PRESENTATION_ID/edit
 ```
 
 ### 4. Test the Application
@@ -98,12 +103,24 @@ PI_HOST=192.168.1.100 bash scripts/deploy.sh
 Create a `.env` file in the project root:
 
 ```bash
-# Required
-SLIDES_URL=https://docs.google.com/presentation/d/YOUR_ID/edit
+# Required – use the published embed URL (recommended)
+SLIDES_URL=https://docs.google.com/presentation/d/e/YOUR_PUBLISHED_ID/embed?start=true&loop=true&delayms=10000
+
+# Regular edit/present URLs also work:
+# SLIDES_URL=https://docs.google.com/presentation/d/YOUR_ID/edit
 
 # Optional (defaults shown)
 CHROMIUM_PATH=/usr/bin/chromium-browser
 ```
+
+#### Getting the published embed URL
+
+1. Open your presentation in Google Slides
+2. Go to **File** → **Share** → **Publish to web**
+3. Select the **Embed** tab and choose your slide advance timing
+4. Click **Publish**, then copy the `src` URL from the `<iframe>` snippet shown
+
+The embed URL already includes `start=true`, `loop=true`, and `delayms` parameters, so all your timing preferences are preserved automatically.
 
 ### Changing Slides URL
 
