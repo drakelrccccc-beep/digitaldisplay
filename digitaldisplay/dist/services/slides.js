@@ -11,6 +11,8 @@ class SlidesService {
      * - /d/{id}/edit
      * - /d/{id}/present
      * - /d/{id}/pub
+     * - /d/e/{id}/edit
+     * - /d/e/{id}/pub
      *
      * @param url - Original Google Slides URL
      * @returns Presentation mode URL with auto-advance
@@ -18,12 +20,17 @@ class SlidesService {
     static toPresentationUrl(url) {
         try {
             const urlObj = new URL(url);
-            // Extract presentation ID from various URL formats
-            const match = urlObj.pathname.match(/\/d\/([a-zA-Z0-9-_]+)/);
-            if (!match || !match[1]) {
+            // Extract presentation ID from standard (/d/{id}/...) and published (/d/e/{id}/...) URLs
+            const standardMatch = urlObj.pathname.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/);
+            const publishedMatch = urlObj.pathname.match(/\/presentation\/d\/e\/([a-zA-Z0-9-_]+)/);
+            if (publishedMatch && publishedMatch[1]) {
+                const publishedId = publishedMatch[1];
+                return `https://docs.google.com/presentation/d/e/${publishedId}/pub?start=true&loop=true&delayms=3000`;
+            }
+            if (!standardMatch || !standardMatch[1]) {
                 throw new Error('Invalid Google Slides URL: Could not extract presentation ID');
             }
-            const presentationId = match[1];
+            const presentationId = standardMatch[1];
             // Build presentation URL with embed parameters
             // start=true: Auto-start presentation
             // loop=true: Loop slides continuously

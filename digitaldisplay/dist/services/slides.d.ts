@@ -8,6 +8,8 @@ export declare class SlidesService {
      * - /d/{id}/edit
      * - /d/{id}/present
      * - /d/{id}/pub
+     * - /d/e/{id}/edit
+     * - /d/e/{id}/pub
      *
      * @param url - Original Google Slides URL
      * @returns Presentation mode URL with auto-advance

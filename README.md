@@ -47,6 +47,11 @@ Edit `.env` file:
 SLIDES_URL=https://docs.google.com/presentation/d/YOUR_PRESENTATION_ID/edit
 ```
 
+Published Google Slides links in this format are also supported:
+```bash
+SLIDES_URL=https://docs.google.com/presentation/d/e/YOUR_PUBLISHED_ID/edit
+```
+
 ### 4. Test the Application
 
 ```bash
