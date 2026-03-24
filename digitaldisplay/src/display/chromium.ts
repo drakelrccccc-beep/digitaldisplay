@@ -8,6 +8,7 @@ import { Display } from '../types';
 export class ChromiumDisplay implements Display {
   private browser: Browser | null = null;
   private page: Page | null = null;
+  private watchdogTimer: NodeJS.Timeout | null = null;
 
   /**
    * Launch Chromium in kiosk mode and navigate to the URL
@@ -17,18 +18,17 @@ export class ChromiumDisplay implements Display {
       console.log('Launching Chromium in kiosk mode...');
       console.log(`URL: ${url}`);
 
-      // Launch Chromium with optimized flags for Raspberry Pi 2
       this.browser = await puppeteer.launch({
-        headless: false, // Show GUI
-        executablePath: '/usr/bin/chromium-browser', // Raspberry Pi OS default Chromium
-	defaultViewport: null,
+        headless: false,
+        executablePath: '/usr/bin/chromium-browser',
+        defaultViewport: null,
         args: [
-          '--kiosk', // Full-screen kiosk mode
+          '--kiosk',
           '--start-fullscreen',
-          '--no-sandbox', // Required for running as root (systemd)
+          '--no-sandbox',
           '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage', // Prevent shared memory issues on Pi
-          '--disable-gpu', // GPU acceleration can be unstable on Pi 2
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
           '--disable-software-rasterizer',
           '--disable-extensions',
           '--disable-plugins',
@@ -51,40 +51,51 @@ export class ChromiumDisplay implements Display {
           '--disable-prompt-on-repost',
           '--disable-renderer-backgrounding',
           '--metrics-recording-only',
-          '--mute-audio', // Mute audio (optional, remove if you need sound)
-          '--autoplay-policy=no-user-gesture-required', // Allow autoplay
+          '--mute-audio',
+          '--autoplay-policy=no-user-gesture-required',
           '--window-position=0,0',
           '--window-size=1920,1080',
-          '--check-for-update-interval=31536000', // Disable update checks
+          '--check-for-update-interval=31536000',
+          '--disk-cache-size=0',
+          '--media-cache-size=0',
         ],
-        ignoreDefaultArgs: ['--enable-automation'], // Hide "Chrome is being controlled" banner
+        ignoreDefaultArgs: ['--enable-automation'],
       });
 
-      // Get the first page (Chromium opens with a blank page)
       const pages = await this.browser.pages();
       this.page = pages[0] || (await this.browser.newPage());
 
-      // Hide cursor by injecting CSS
+      // Hide cursor inside browser window
       await this.page.addStyleTag({
         content: '* { cursor: none !important; }'
       });
 
-      // Navigate to the URL
+      // Use 'load' instead of 'networkidle2' — more reliable on slow Pi 2
       await this.page.goto(url, {
-        waitUntil: 'networkidle2', // Wait for network to be idle
-        timeout: 60000, // 60 second timeout for slow Pi 2
+        waitUntil: 'load',
+        timeout: 90000,
       });
 
       console.log('Chromium launched successfully in kiosk mode');
 
-      // Keep the page alive and handle errors
+      // Start watchdog to reload every 30 minutes if slides get stuck
+      this.startWatchdog(url);
+
+      // Handle page crash
       this.page.on('error', (error) => {
         console.error('Page crashed:', error);
         this.restart(url);
       });
 
+      // Log page errors but don't restart for these
       this.page.on('pageerror', (error) => {
         console.error('Page error:', error);
+      });
+
+      // Handle silent browser disconnect
+      this.browser.on('disconnected', () => {
+        console.error('Browser disconnected, restarting...');
+        this.restart(url);
       });
 
     } catch (error) {
@@ -94,10 +105,32 @@ export class ChromiumDisplay implements Display {
   }
 
   /**
+   * Reload page every 30 minutes to prevent slides getting stuck
+   */
+  private startWatchdog(url: string): void {
+    if (this.watchdogTimer) clearInterval(this.watchdogTimer);
+    this.watchdogTimer = setInterval(async () => {
+      try {
+        console.log('Watchdog: reloading page...');
+        if (this.page) {
+          await this.page.reload({ waitUntil: 'load', timeout: 30000 });
+        }
+      } catch (error) {
+        console.error('Watchdog reload failed, restarting:', error);
+        this.restart(url);
+      }
+    }, 30 * 60 * 1000);
+  }
+
+  /**
    * Close the browser
    */
   async close(): Promise<void> {
     try {
+      if (this.watchdogTimer) {
+        clearInterval(this.watchdogTimer);
+        this.watchdogTimer = null;
+      }
       if (this.browser) {
         console.log('Closing Chromium...');
         await this.browser.close();
@@ -115,11 +148,15 @@ export class ChromiumDisplay implements Display {
    */
   private async restart(url: string): Promise<void> {
     console.log('Restarting display...');
+    if (this.watchdogTimer) {
+      clearInterval(this.watchdogTimer);
+      this.watchdogTimer = null;
+    }
     await this.close();
     setTimeout(() => {
       this.launch(url).catch((error) => {
         console.error('Failed to restart display:', error);
       });
-    }, 5000); // Wait 5 seconds before restart
+    }, 5000);
   }
 }
