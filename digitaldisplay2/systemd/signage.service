@@ -1,0 +1,18 @@
+[Unit]
+Description=Signage Display
+After=graphical.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/xset s off -dpms
+ExecStart=/bin/bash SIGNAGE_DIR/start.sh
+WorkingDirectory=SIGNAGE_DIR
+Restart=always
+RestartSec=10
+User=SIGNAGE_USER
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=SIGNAGE_HOME/.Xauthority
+
+[Install]
+WantedBy=graphical.target
