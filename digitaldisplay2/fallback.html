@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>J.F. Drake Memorial LRC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #7e2035 0%, #5a1220 60%, #3d0b17 100%);
+            color: #ffffff;
+            font-family: Georgia, 'Times New Roman', serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0;
+        }
+
+        /* Wordmark logo */
+        .logo {
+            margin-bottom: 42px;
+        }
+
+        .logo img {
+            height: 100px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            opacity: 0.95;
+        }
+
+        /* Ornamental divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 28px 0;
+            width: 520px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        .divider-diamond {
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.5);
+            transform: rotate(45deg);
+        }
+
+        /* LRC name */
+        .lrc {
+            font-size: 22px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.82;
+            line-height: 1.6;
+        }
+
+        /* Clock block */
+        .clock-block {
+            margin-top: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clock {
+            font-size: 80px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            font-family: 'Courier New', monospace;
+            color: rgba(255,255,255,0.92);
+            text-shadow: 0 0 40px rgba(255,255,255,0.1);
+            line-height: 1;
+        }
+
+        .date-line {
+            font-size: 16px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            font-family: Georgia, serif;
+        }
+
+        /* Status dot — small red dot, bottom-right */
+        .status-dot {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e03030;
+            box-shadow: 0 0 8px rgba(220, 50, 50, 0.7);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            <img src="wordmark.small.web.png" alt="Alabama A&M University">
+        </div>
+
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-diamond"></div>
+            <div class="divider-line"></div>
+        </div>
+
+        <div class="lrc">
+            J.F. Drake Memorial<br>Learning Resources Center
+        </div>
+
+        <div class="clock-block">
+            <div class="clock" id="clock"></div>
+            <div class="date-line" id="date"></div>
+        </div>
+
+    </div>
+
+    <div class="status-dot"></div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+</body>
+</html>
